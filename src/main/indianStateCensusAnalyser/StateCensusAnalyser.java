@@ -1,90 +1,61 @@
 package main.indianStateCensusAnalyser;
 
 import java.io.IOException;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Paths;
+import java.util.Iterator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
 
-import indianstatecensusAnalyser.CsvException;
-import indianstatecensusAnalyser.StateCensusAnalyser;
+public class StateCensusAnalyser {
+	private String CSV_FILE_PATH = "";
 
-public class StateCensusAnalyserTest {
+	public StateCensusAnalyser() {
+
+	}
+
+	public StateCensusAnalyser(String SAMPLE_CSV_FILE_PATH) {
+		this.CSV_FILE_PATH = SAMPLE_CSV_FILE_PATH;
+	}
 
 	/**
-	 * This test case pass when a file with 4rows is read.
+	 * @return the number of data read from the csv file
+	 * 
 	 */
-	@Test
-	public void givenCsvFile_with8rowscomparingwith8_returnstrue() {
+	public int readStateRecord() throws CsvException {
+		int count = 0;
 		try {
-			StateCensusAnalyser analyser = new StateCensusAnalyser(
-					"C:\\Users\\user\\Desktop\\LFP_Batch\\Day29_IndianstatecensusAnalyser\\data\\Data3.csv");
-			Assert.assertEquals(4, analyser.readStateRecord());
-		} catch (CsvException e) {
-			System.out.println(e);
-		}
-	}
+			Reader reader = Files.newBufferedReader(Paths.get(CSV_FILE_PATH));
+			@SuppressWarnings("unchecked")
+			CsvToBean<CsvStateCensus> csvToBean = new CsvToBeanBuilder(reader).withType(CsvStateCensus.class)
+					.withIgnoreLeadingWhiteSpace(true).build();
+			Iterator<CsvStateCensus> csvUserIterator = csvToBean.iterator();
+			while (csvUserIterator.hasNext()) {
+				CsvStateCensus state = csvUserIterator.next();
+				count++;
 
-	/*
-	 * given csv file that doesn't exist
-	 */
-	@Test
-	public void givenCsvFile_whichIsIncorrect_Exception() {
-		try {
-			StateCensusAnalyser analyser = new StateCensusAnalyser(
-					"C:\\Users\\user\\Desktop\\LFP_Batch\\Day29_IndianstatecensusAnalyser\\data\\Data4.csv");
-			analyser.readStateRecord();
-		} catch (CsvException e) {
-			Assert.assertEquals("File not found", e.getMessage());
-			System.out.println(e);
+				if (state.getState() == null || state.getPopulation() == 0 || state.getAreaInSqKm() == 0) {
+					throw new CsvException(CsvException.ExceptionType.INCORRECT_HEADER, "Header doesn't match");
+				}
+			}
 		}
 
-	}
+		catch (NoSuchFileException e) {
+			if (CSV_FILE_PATH.contains(".csv")) {
+				throw new CsvException(CsvException.ExceptionType.FILE_NOT_FOUND, "File not found");
+			}
+			throw new CsvException(CsvException.ExceptionType.INCORRECT_TYPE, "Wrong Type");
 
-	/*
-	 * given csv file other .csv format
-	 */
-	@Test
-	public void givenCsvFile_whichIsWrongType_returnsFalse() {
-		try {
-			StateCensusAnalyser analyser = new StateCensusAnalyser(
-					"C:\\Users\\user\\Desktop\\LFP_Batch\\Day29_IndianstatecensusAnalyser\\data\\Data.txt");
-			analyser.readStateRecord();
-		} catch (CsvException e) {
-			Assert.assertEquals("Wrong Type", e.getMessage());
+		} catch (RuntimeException e) {
+
+			throw new CsvException(CsvException.ExceptionType.DELEMETER_NOT_FOUND, "Wrong Delimiter");
+		} catch (IOException e) {
 			System.out.println(e);
 		}
+
+		return count;
 	}
-
-	/*
-	 * given csv file with wrong delimiter
-	 */
-	@Test
-	public void givenCsvFile_withwrongdelimiter_returnsFalse() {
-		try {
-			StateCensusAnalyser analyser = new StateCensusAnalyser(
-					"C:\\Users\\user\\Desktop\\LFP_Batch\\Day29_IndianstatecensusAnalyser\\data\\Data2.csv");
-			analyser.readStateRecord();
-		} catch (CsvException e) {
-
-			System.out.println(e);
-			Assert.assertEquals("Wrong Delimiter", e.getMessage());
-		}
-	}
-
-	/*
-	 * given csv file with wrong header
-	 */
-	@Test
-	public void givenCsvFile_withwrongdHeader_returnsFalse() {
-		try {
-			StateCensusAnalyser analyser = new StateCensusAnalyser(
-					"C:\\Users\\user\\Desktop\\LFP_Batch\\Day29_IndianstatecensusAnalyser\\data\\Data1.csv");
-			analyser.readStateRecord();
-		} catch (CsvException e) {
-
-			System.out.println(e);
-			Assert.assertEquals("Header doesn't match", e.getMessage());
-		}
-	}
-
 }

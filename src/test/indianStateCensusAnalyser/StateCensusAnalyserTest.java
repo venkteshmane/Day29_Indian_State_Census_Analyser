@@ -1,72 +1,87 @@
 package test.indianStateCensusAnalyser;
 
+import java.io.IOException;
+
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
-public class CensusAnalyserTest {
+public class StateCensusAnalyserTest {
 
-    private static final String INDIA_CENSUS_CSV_FILE_PATH = "./src/test/resources/IndiaStateCensusData.csv";
-    private static final String WRONG_CSV_FILE_PATH = "./src/main/resources/IndiaStateCensusData.csv";
-    private static final String WRONG_TYPE_CSV_FILE_PATH = "./src/main/resources/IndiaStateCensusData.pdf";
-    private static final String WRONG_DELIMITER_CSV_FILE_PATH = "./src/main/resources/IndiaStateCensusDataWrongDelimiter.csv";
-    private static final String WRONG_HEADER_CSV_FILE_PATH = "./src/main/resources/IndiaStateCensusDataWrongHeader.csv";
-    @Test
-    public void givenIndianCensusCSVFileReturnsCorrectRecords() {
-        try {
-            CsvException censusAnalyser = new CsvException();
-            int numOfRecords = censusAnalyser.loadIndiaCensusData(INDIA_CENSUS_CSV_FILE_PATH);
-            System.out.println(numOfRecords);
-            Assert.assertEquals(29,numOfRecords);
-        } catch (CsvStateCensus e)
-        {
-            System.out.println("Exception Occurs");
-        }
-    }
+	/**
+	 * This test case pass when a file with 4rows is read.
+	 */
+	@Test
+	public void givenCsvFile_with8rowscomparingwith8_returnstrue() {
+		try {
+			StateCensusAnalyser analyser = new StateCensusAnalyser(
+					"C:\\Users\\user\\Desktop\\LFP_Batch\\Day29_IndianstatecensusAnalyser\\data\\Data3.csv");
+			Assert.assertEquals(4, analyser.readStateRecord());
+		} catch (CsvException e) {
+			System.out.println(e);
+		}
+	}
 
-    @Test
-    public void givenIndiaCensusData_WithWrongFile_ShouldThrowException() {
-        try {
-            CsvException censusAnalyser = new CsvException();
-            ExpectedException exceptionRule = ExpectedException.none();
-            exceptionRule.expect(CsvStateCensus.class);
-            censusAnalyser.loadIndiaCensusData(WRONG_CSV_FILE_PATH);
-        } catch (CsvStateCensus e) {
-            Assert.assertEquals(CsvStateCensus.ExceptionType.CENSUS_FILE_PROBLEM,e.type);
-        }
-    }
-    @Test
-    public void givenIndiaCensusData_WithWrongType_ShouldThrowException()
-    {
-        try {
-            CsvException censusAnalyser = new CsvException();
-            ExpectedException exceptionRule = ExpectedException.none();
-            exceptionRule.expect(CsvStateCensus.class);
-            censusAnalyser.loadIndiaCensusData(WRONG_TYPE_CSV_FILE_PATH);
-        } catch (CsvStateCensus e) {
-            Assert.assertEquals(CsvStateCensus.ExceptionType.CENSUS_FILE_PROBLEM,e.type);
-        }
-    }
-    @Test
-    public void givenIndiaCensusData_WithWrongDelimiter_ShouldThrowException() {
-        try {
-            CsvException censusAnalyser = new CsvException();
-            ExpectedException exceptionRule = ExpectedException.none();
-            exceptionRule.expect(CsvStateCensus.class);
-            censusAnalyser.loadIndiaCensusData(WRONG_DELIMITER_CSV_FILE_PATH);
-        } catch (CsvStateCensus e) {
-            Assert.assertEquals(CsvStateCensus.ExceptionType.CENSUS_FILE_PROBLEM,e.type);
-        }
-    }
-    @Test
-    public void givenIndiaCensusData_WithWrongHeader_ShouldThrowException() {
-        try {
-            CsvException censusAnalyser = new CsvException();
-            ExpectedException exceptionRule = ExpectedException.none();
-            exceptionRule.expect(CsvStateCensus.class);
-            censusAnalyser.loadIndiaCensusData(WRONG_HEADER_CSV_FILE_PATH);
-        } catch (CsvStateCensus e) {
-            Assert.assertEquals(CsvStateCensus.ExceptionType.CENSUS_FILE_PROBLEM,e.type);
-        }
-    }
+	/*
+	 * given csv file that doesn't exist
+	 */
+	@Test
+	public void givenCsvFile_whichIsIncorrect_Exception() {
+		try {
+			StateCensusAnalyser analyser = new StateCensusAnalyser(
+					"C:\\Users\\user\\Desktop\\LFP_Batch\\Day29_IndianstatecensusAnalyser\\data\\Data4.csv");
+			analyser.readStateRecord();
+		} catch (CsvException e) {
+			Assert.assertEquals("File not found", e.getMessage());
+			System.out.println(e);
+		}
+
+	}
+
+	/*
+	 * given csv file other .csv format
+	 */
+	@Test
+	public void givenCsvFile_whichIsWrongType_returnsFalse() {
+		try {
+			StateCensusAnalyser analyser = new StateCensusAnalyser(
+					"C:\\Users\\user\\Desktop\\LFP_Batch\\Day29_IndianstatecensusAnalyser\\data\\Data.txt");
+			analyser.readStateRecord();
+		} catch (CsvException e) {
+			Assert.assertEquals("Wrong Type", e.getMessage());
+			System.out.println(e);
+		}
+	}
+
+	/*
+	 * given csv file with wrong delimiter
+	 */
+	@Test
+	public void givenCsvFile_withwrongdelimiter_returnsFalse() {
+		try {
+			StateCensusAnalyser analyser = new StateCensusAnalyser(
+					"C:\\Users\\user\\Desktop\\LFP_Batch\\Day29_IndianstatecensusAnalyser\\data\\Data2.csv");
+			analyser.readStateRecord();
+		} catch (CsvException e) {
+
+			System.out.println(e);
+			Assert.assertEquals("Wrong Delimiter", e.getMessage());
+		}
+	}
+
+	/*
+	 * given csv file with wrong header
+	 */
+	@Test
+	public void givenCsvFile_withwrongdHeader_returnsFalse() {
+		try {
+			StateCensusAnalyser analyser = new StateCensusAnalyser(
+					"C:\\Users\\user\\Desktop\\LFP_Batch\\Day29_IndianstatecensusAnalyser\\data\\Data1.csv");
+			analyser.readStateRecord();
+		} catch (CsvException e) {
+
+			System.out.println(e);
+			Assert.assertEquals("Header doesn't match", e.getMessage());
+		}
+	}
+
 }

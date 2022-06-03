@@ -1,22 +1,33 @@
 package main.indianStateCensusAnalyser;
 
-public class CsvStateCensus extends Exception
-{
-    enum ExceptionType
-    {
-        CENSUS_FILE_PROBLEM,UNABLE_TO_PARSE;
+public class CsvStateCensus {
 
-        //public enum UNABLE_TO_PARSE {}
-    }
-    ExceptionType type;
+	String state;
+	long population;
+	long areaInSqKm;
 
-    public CsvStateCensus(String message, ExceptionType type) {
-        super(message);
-        this.type = type;
-    }
+	public String getState() {
+		return state;
+	}
 
-    public CsvStateCensus(String message, ExceptionType type, Throwable cause) {
-        super(message, cause);
-        this.type = type;
-    }
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public long getPopulation() {
+		return population;
+	}
+
+	public void setPopulation(long population) {
+		this.population = population;
+	}
+
+	public long getAreaInSqKm() {
+		return areaInSqKm;
+	}
+
+	public void setAreaInSqKm(long areaInSqKm) {
+		this.areaInSqKm = areaInSqKm;
+	}
+
 }
