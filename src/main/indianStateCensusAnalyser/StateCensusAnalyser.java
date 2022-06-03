@@ -25,20 +25,31 @@ public class StateCensusAnalyser {
 	 * @return the number of data read from the csv file
 	 * 
 	 */
-	public int readStateRecord() throws CsvException {
+	public <T> int readStateRecord(Class<T> className) throws CsvException {
 		int count = 0;
 		try {
 			Reader reader = Files.newBufferedReader(Paths.get(CSV_FILE_PATH));
 			@SuppressWarnings("unchecked")
-			CsvToBean<CsvStateCensus> csvToBean = new CsvToBeanBuilder(reader).withType(CsvStateCensus.class)
-					.withIgnoreLeadingWhiteSpace(true).build();
-			Iterator<CsvStateCensus> csvUserIterator = csvToBean.iterator();
+			CsvToBean<T> csvToBean = new CsvToBeanBuilder(reader).withType(className).withIgnoreLeadingWhiteSpace(true)
+					.build();
+			Iterator<T> csvUserIterator = csvToBean.iterator();
 			while (csvUserIterator.hasNext()) {
-				CsvStateCensus state = csvUserIterator.next();
+				T state = csvUserIterator.next();
 				count++;
+				if (state instanceof CsvStateCensus) {
+					if (((CsvStateCensus) state).getState() == null || ((CsvStateCensus) state).getPopulation() == 0
+							|| ((CsvStateCensus) state).getAreaInSqKm() == 0) {
 
-				if (state.getState() == null || state.getPopulation() == 0 || state.getAreaInSqKm() == 0) {
-					throw new CsvException(CsvException.ExceptionType.INCORRECT_HEADER, "Header doesn't match");
+						throw new CsvException(CsvException.ExceptionType.INCORRECT_HEADER, "Header doesn't match");
+					}
+				}
+
+				if (state instanceof StateCode) {
+					if (((StateCode) state).getSrNo() == 0 || ((StateCode) state).getStateName() == null
+							|| ((StateCode) state).getStateCode() == null) {
+
+						throw new CsvException(CsvException.ExceptionType.INCORRECT_HEADER, "Header doesn't match");
+					}
 				}
 			}
 		}

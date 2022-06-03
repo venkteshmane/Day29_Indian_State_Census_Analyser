@@ -5,6 +5,10 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
 
+import indianstatecensusAnalyser.CsvException;
+import indianstatecensusAnalyser.StateCensusAnalyser;
+import indianstatecensusAnalyser.StateCode;
+
 public class StateCensusAnalyserTest {
 
 	/**
@@ -15,7 +19,7 @@ public class StateCensusAnalyserTest {
 		try {
 			StateCensusAnalyser analyser = new StateCensusAnalyser(
 					"C:\\Users\\user\\Desktop\\LFP_Batch\\Day29_IndianstatecensusAnalyser\\data\\Data3.csv");
-			Assert.assertEquals(4, analyser.readStateRecord());
+			Assert.assertEquals(4, analyser.readStateRecord(StateCode.class));
 		} catch (CsvException e) {
 			System.out.println(e);
 		}
@@ -29,7 +33,7 @@ public class StateCensusAnalyserTest {
 		try {
 			StateCensusAnalyser analyser = new StateCensusAnalyser(
 					"C:\\Users\\user\\Desktop\\LFP_Batch\\Day29_IndianstatecensusAnalyser\\data\\Data4.csv");
-			analyser.readStateRecord();
+			analyser.readStateRecord(StateCode.class);
 		} catch (CsvException e) {
 			Assert.assertEquals("File not found", e.getMessage());
 			System.out.println(e);
@@ -45,7 +49,7 @@ public class StateCensusAnalyserTest {
 		try {
 			StateCensusAnalyser analyser = new StateCensusAnalyser(
 					"C:\\Users\\user\\Desktop\\LFP_Batch\\Day29_IndianstatecensusAnalyser\\data\\Data.txt");
-			analyser.readStateRecord();
+			analyser.readStateRecord(StateCode.class);
 		} catch (CsvException e) {
 			Assert.assertEquals("Wrong Type", e.getMessage());
 			System.out.println(e);
@@ -59,8 +63,8 @@ public class StateCensusAnalyserTest {
 	public void givenCsvFile_withwrongdelimiter_returnsFalse() {
 		try {
 			StateCensusAnalyser analyser = new StateCensusAnalyser(
-					"C:\\Users\\user\\Desktop\\LFP_Batch\\Day29_IndianstatecensusAnalyser\\data\\Data2.csv");
-			analyser.readStateRecord();
+					"C:\\Users\\user\\Desktop\\LFP_Batch\\Day29_IndianstatecensusAnalyser\\data\\Data.csv");
+			analyser.readStateRecord(StateCode.class);
 		} catch (CsvException e) {
 
 			System.out.println(e);
@@ -76,7 +80,7 @@ public class StateCensusAnalyserTest {
 		try {
 			StateCensusAnalyser analyser = new StateCensusAnalyser(
 					"C:\\Users\\user\\Desktop\\LFP_Batch\\Day29_IndianstatecensusAnalyser\\data\\Data1.csv");
-			analyser.readStateRecord();
+			analyser.readStateRecord(StateCode.class);
 		} catch (CsvException e) {
 
 			System.out.println(e);
